@@ -27,9 +27,7 @@ dist
 dist-ssr
 *.local
 
-/apirest/*
 /vault
-/infrastructure/pgsql-16/data
-/infrastructure/nginx-php/docker/config
+/infrastructure/pgsql-17/data
 /resources/database/*
 /jenkis-*
