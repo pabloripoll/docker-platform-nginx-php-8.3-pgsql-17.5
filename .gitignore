@@ -27,7 +27,11 @@ dist
 dist-ssr
 *.local
 
-/vault
-/infrastructure/pgsql-17/data
-/resources/database/*
-/jenkis-*
+vault
+resources/database/*
+!resources/database/.gitignore
+resources/docs/apirest/project/*
+!resources/docs/apirest/project/.gitignore
+platform/pgsql-17/data
+apirest/*
+!apirest/.gitignore
