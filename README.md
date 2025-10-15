@@ -21,6 +21,7 @@ Additionally, this repository is independent of the API container code, allowing
 - [Set up Docker Containers](#setup-containers)
 - [Create Docker Containers](#create-containers)
 - [GNU Make file recipes](#make-help)
+- [Use this Platform Repository for REST API project](#platform-usage)
 <br><br>
 
 ## <a id="requirements"></a>Requirements
@@ -230,6 +231,92 @@ This streamlines the workflow for managing containers with mnemonic recipe names
 <div style="with:100%;height:auto;text-align:center;">
     <img src="./resources/docs/images/make-help.jpg">
 </div>
+<br>
+
+## <a id="platform-usage"></a>Use this Platform Repository for REST API project
+
+Clone the platforms repository
+```bash
+$ git clone https://github.com/pabloripoll/docker-platform-nginx-php-8.3-pgsql-17.5
+$ cd docker-platform-nginx-php-8.3-pgsql-17.5
+```
+
+Repository directories structure overview:
+```
+.
+├── apirest (Symfony, Laravel, etc.)
+│   ├── app
+│   ├── bootstrap
+│   ├── vendor
+│   └── ...
+│
+├── platform
+│   ├── nginx-php
+│   │   ├── docker
+│   │   │   ├── config
+│   │   │   ├── .env
+│   │   │   ├── docker-compose.yml
+│   │   │   └── Dockerfile
+│   │   │
+│   │   └── Makefile
+│   └── postgres-17.5
+│       ├── docker
+│       └── Makefile
+├── .env
+├── Makefile
+└── README.md
+```
+<br>
+
+Set up platforms
+- Copy `.env.example` to `.env` and adjust settings (apirest port, database port, container RAM usage, etc.)
+- By configuring the PHPcontainer with e.g. `APIREST_CAAS_MEM=128M`, remember to set the same RAM value into `./platform/nginx-php/docker/config/php/php.ini`
+<br><br>
+
+Generate the environment for each platform
+```bash
+$ make apirest-set postgres-set
+```
+<br>
+
+Create platforms containers
+```bash
+$ make apirest-create postgres-create
+```
+<br>
+
+Remove default Nginx-PHP platform API content
+```bash
+$ git rm -r ./apirest
+$ git clean -fd
+$ git reset --hard
+$ rm -rfv ./apirest/*
+$ rm -rfv ./apirest/.*
+```
+
+Now `./apirest` directory can be used to install any other REST API repository
+
+> **Note**: Most probably it would be needed to update root `.gitignore` file to ignore the REST API one.
+
+<br>
+
+---
+
+## Contributing
+
+Contributions are very welcome! Please open issues or submit PRs for improvements, new features, or bug fixes.
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/YourFeature`)
+3. Commit your changes (`git commit -am 'feat: Add new feature'`)
+4. Push to the branch (`git push origin feature/YourFeature`)
+5. Create a new Pull Request
+
+---
+
+## License
+
+This project is open-sourced under the [MIT license](LICENSE).
 
 <!-- FOOTER -->
 <br>
