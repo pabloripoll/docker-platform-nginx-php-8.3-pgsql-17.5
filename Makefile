@@ -151,6 +151,14 @@ postgres-destroy: ## destroys completly the database container with its data
 		fi \
 	fi
 
+.PHONY: postgres-test-up postgres-test-down
+
+postgres-test-up: ## creates a side database for tests
+	$(DOCKER) exec -it $(DATABASE_CONTAINER) sh -c 'dropdb -f $(DATABASE_NAME)_testing -U "$(DATABASE_USER)"; createdb $(DATABASE_NAME)_testing -U "$(DATABASE_USER)"';
+
+postgres-test-down: ## drops the side database for tests
+	$(DOCKER) exec -it $(DATABASE_CONTAINER) sh -c 'dropdb -f $(DATABASE_NAME)_testing -U "$(DATABASE_USER)";';
+
 .PHONY: postgres-sql-install postgres-sql-replace postgres-sql-backup postgres-sql-remote postgres-copy-remote
 
 postgres-sql-install: ## installs postgres sql file into the container database to init a project from resources/database
