@@ -16,6 +16,7 @@ Additionally, this repository is independent of the API container code, allowing
 ## Content of this page:
 
 - [Requirements](#requirements)
+- [Platform Features](#platform-features)
 - [API service container settings](#api-settings)
 - [Database service container settings](#db-settings)
 - [Set up Docker Containers](#setup-containers)
@@ -38,6 +39,23 @@ Despite Docker’s cross-platform compatibility, for intermediate to advanced so
 | RAM           | *(for this container)*: 1 GB minimum.                                                         |
 | DISK          | 2 GB *(though is much less, it usage could be incremented depending on the project usage)*.   |
 <br>
+
+## <a id="platform-features"></a>Platform Features
+
+It can be installed the most known **PHP** frameworks:
+
+- [Symfony](https://symfony.com/)
+- [Laravel](https://laravel.com/)
+- [Zend](https://framework.zend.com/)
+- [Codeigniter](https://codeigniter.es/)
+- [Phalcon](https://phalcon.io/es-es)
+- [CakePHP](https://cakephp.org/)
+- [Yii](https://www.yiiframework.com/)
+- Others...
+<br>
+
+Take into account that each framework will demand its specific configuration from inside container.
+<br><br>
 
 ## <a id="api-settings"></a>API service container settings
 
