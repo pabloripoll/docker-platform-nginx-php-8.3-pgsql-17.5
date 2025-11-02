@@ -189,6 +189,55 @@ postgres-sql-drop: ## drops and creates the postgres database into the container
 	echo ${C_YEL}"$(PROJECT_NAME) DATABASE"${C_END}" in container "${C_YEL}"$(DATABASE_CONTAINER)"${C_END}" has been deleted."
 
 # -------------------------------------------------------------------------------------------------
+#  Broker Service
+# -------------------------------------------------------------------------------------------------
+.PHONY: rabbitmq-hostcheck rabbitmq-info rabbitmq-set rabbitmq-create rabbitmq-network rabbitmq-ssh rabbitmq-start rabbitmq-stop rabbitmq-destroy
+
+rabbitmq-hostcheck: ## shows this project ports availability on local machine for broker container
+	cd platform/$(BROKER_PLTF) && $(MAKE) port-check
+
+rabbitmq-info: ## shows the broker docker related information
+	cd platform/$(BROKER_PLTF) && $(MAKE) info
+
+rabbitmq-set: ## sets the broker enviroment file to build the container
+	cd platform/$(BROKER_PLTF) && $(MAKE) env-set
+
+rabbitmq-create: ## creates the broker container from Docker image
+	cd platform/$(BROKER_PLTF) && $(MAKE) build up
+
+rabbitmq-network: ## creates the broker container network - execute this recipe first before others
+	$(MAKE) rabbitmq-stop
+	cd platform/$(BROKER_PLTF) && $(DOCKER_COMPOSE) -f docker-compose.yml -f docker-compose.network.yml up -d
+
+rabbitmq-ssh: ## enters the broker container shell
+	cd platform/$(BROKER_PLTF) && $(MAKE) ssh
+
+rabbitmq-start: ## starts the broker container running
+	cd platform/$(BROKER_PLTF) && $(MAKE) start
+
+rabbitmq-stop: ## stops the broker container but its assets will not be destroyed
+	cd platform/$(BROKER_PLTF) && $(MAKE) stop
+
+rabbitmq-restart: ## restarts the running broker container
+	cd platform/$(BROKER_PLTF) && $(MAKE) restart
+
+rabbitmq-destroy: ## destroys completly the broker container
+	echo ${C_RED}"Attention!"${C_END};
+	echo ${C_YEL}"You're about to remove the "${C_BLU}"$(BROKER_PROJECT)"${C_END}" container and delete its image resource."${C_END};
+	@echo -n ${C_RED}"Are you sure to proceed? "${C_END}"[y/n]: " && read response && if [ $${response:-'n'} != 'y' ]; then \
+        echo ${C_GRN}"K.O.! container has been stopped but not destroyed."${C_END}; \
+    else \
+		cd platform/$(BROKER_PLTF) && $(MAKE) stop clear destroy; \
+		echo -n ${C_GRN}"Do you want to clear DOCKER cache? "${C_END}"[y/n]: " && read response && if [ $${response:-'n'} != 'y' ]; then \
+			echo ${C_YEL}"The following command is delegated to be executed by user:"${C_END}; \
+			echo "$$ $(DOCKER) system prune"; \
+		else \
+			$(DOCKER) system prune; \
+			echo ${C_GRN}"O.K.! DOCKER cache has been cleared up."${C_END}; \
+		fi \
+	fi
+
+# -------------------------------------------------------------------------------------------------
 #  Repository Helper
 # -------------------------------------------------------------------------------------------------
 .PHONY: repo-flush repo-commit
