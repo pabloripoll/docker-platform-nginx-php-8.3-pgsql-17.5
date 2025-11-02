@@ -1,2 +1,5 @@
-/data
-/log
+.env
+/data/*
+!/data/.gitkeep
+/log/*
+!/log/.gitkeep
