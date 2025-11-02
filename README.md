@@ -192,6 +192,14 @@ $ make local-hostname
 
 ## <a id="create-containers"></a>Create and Start Docker Containers
 
+For custom configurations, there is a `./platform/nginx-php/docker/config/supervisor/conf.d-sample` directory with **Supervisord** services. Copy the main two services required for the **apirest** container startup.
+```bash
+$ cd ./platform/nginx-php/docker/config/supervisor
+$ cp -vn conf.d-sample/nginx.conf conf.d-sample/php-fpm.conf conf.d/
+'conf.d-sample/nginx.conf' -> 'conf.d/nginx.conf'
+'conf.d-sample/php-fpm.conf' -> 'conf.d/php-fpm.conf'
+```
+
 Create and start up the API container
 ```bash
 $ make apirest-create
