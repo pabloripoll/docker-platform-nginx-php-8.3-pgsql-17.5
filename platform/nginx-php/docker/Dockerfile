@@ -76,6 +76,7 @@ RUN apk add --no-cache \
   ${PHP_V}-xmlwriter \
   ${PHP_V}-simplexml \
   ${PHP_V}-zip \
+  ${PHP_V}-bcmath \
   # Databases
   ${PHP_V}-pdo \
   ${PHP_V}-pdo_sqlite \
