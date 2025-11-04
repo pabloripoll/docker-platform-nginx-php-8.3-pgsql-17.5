@@ -75,8 +75,6 @@ RUN apk add --no-cache \
   ${PHP_V}-xmlreader \
   ${PHP_V}-xmlwriter \
   ${PHP_V}-simplexml \
-  ${PHP_V}-zip \
-  ${PHP_V}-bcmath \
   # Databases
   ${PHP_V}-pdo \
   ${PHP_V}-pdo_sqlite \
@@ -87,7 +85,7 @@ RUN apk add --no-cache \
   postgresql-dev
 
 # PHP requires these extension from Docker
-RUN docker-php-ext-install zip gd pdo pdo_pgsql
+RUN docker-php-ext-install zip gd bcmath sockets pcntl pdo pdo_pgsql
 
 # PHP PECL extensions - XDebug - (optional - uncomment line to use it and add a backslash in previous line)
 RUN apk add \
