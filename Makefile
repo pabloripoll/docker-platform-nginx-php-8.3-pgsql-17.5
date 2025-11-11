@@ -188,35 +188,35 @@ db-sql-drop: ## drops the container main database but recreates the database wit
 # -------------------------------------------------------------------------------------------------
 .PHONY: mailhog-hostcheck mailhog-info mailhog-set mailhog-create mailhog-network mailhog-ssh mailhog-start mailhog-stop mailhog-destroy
 
-mailhog-hostcheck: ## shows this project ports availability on local machine for broker container
+mailhog-hostcheck: ## shows this project ports availability on local machine for mailer container
 	cd platform/$(MAILER_PLTF) && $(MAKE) port-check
 
-mailhog-info: ## shows the broker docker related information
+mailhog-info: ## shows the mailer docker related information
 	cd platform/$(MAILER_PLTF) && $(MAKE) info
 
-mailhog-set: ## sets the broker enviroment file to build the container
+mailhog-set: ## sets the mailer enviroment file to build the container
 	cd platform/$(MAILER_PLTF) && $(MAKE) env-set
 
-mailhog-create: ## creates the broker container from Docker image
+mailhog-create: ## creates the mailer container from Docker image
 	cd platform/$(MAILER_PLTF) && $(MAKE) build up
 
-mailhog-network: ## creates the broker container network - execute this recipe first before others
+mailhog-network: ## creates the mailer container network - execute this recipe first before others
 	$(MAKE) mailhog-stop
 	cd platform/$(MAILER_PLTF) && $(DOCKER_COMPOSE) -f docker-compose.yml -f docker-compose.network.yml up -d
 
-mailhog-ssh: ## enters the broker container shell
+mailhog-ssh: ## enters the mailer container shell
 	cd platform/$(MAILER_PLTF) && $(MAKE) ssh
 
-mailhog-start: ## starts the broker container running
+mailhog-start: ## starts the mailer container running
 	cd platform/$(MAILER_PLTF) && $(MAKE) start
 
-mailhog-stop: ## stops the broker container but its assets will not be destroyed
+mailhog-stop: ## stops the mailer container but its assets will not be destroyed
 	cd platform/$(MAILER_PLTF) && $(MAKE) stop
 
-mailhog-restart: ## restarts the running broker container
+mailhog-restart: ## restarts the running mailer container
 	cd platform/$(MAILER_PLTF) && $(MAKE) restart
 
-mailhog-destroy: ## destroys completly the broker container
+mailhog-destroy: ## destroys completly the mailer container
 	echo ${C_RED}"Attention!"${C_END};
 	echo ${C_YEL}"You're about to remove the "${C_BLU}"$(MAILER_PROJECT)"${C_END}" container and delete its image resource."${C_END};
 	@echo -n ${C_RED}"Are you sure to proceed? "${C_END}"[y/n]: " && read response && if [ $${response:-'n'} != 'y' ]; then \
