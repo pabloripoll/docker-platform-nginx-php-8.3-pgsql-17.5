@@ -107,39 +107,39 @@ apirest-destroy: ## destroys completly the apirest container
 	fi
 
 # -------------------------------------------------------------------------------------------------
-#  Postgres Database Service
+#  Database Service
 # -------------------------------------------------------------------------------------------------
-.PHONY: postgres-hostcheck postgres-info postgres-set postgres-create postgres-ssh postgres-start postgres-stop postgres-destroy
+.PHONY: db-hostcheck db-info db-set db-create db-ssh db-start db-stop db-destroy
 
-postgres-hostcheck: ## shows this project ports availability on local machine for database container
+db-hostcheck: ## shows this project ports availability on local machine for database container
 	cd platform/$(DATABASE_PLTF) && $(MAKE) port-check
 
-postgres-info: ## shows docker related information
+db-info: ## shows docker related information
 	cd platform/$(DATABASE_PLTF) && $(MAKE) info
 
-postgres-set: ## sets the database enviroment file to build the container
+db-set: ## sets the database enviroment file to build the container
 	cd platform/$(DATABASE_PLTF) && $(MAKE) env-set
 
-postgres-create: ## creates the database container from Docker image
+db-create: ## creates the database container from Docker image
 	cd platform/$(DATABASE_PLTF) && $(MAKE) build up
 
-postgres-network: ## creates the database container external network
+db-network: ## creates the database container external network
 	$(MAKE) apirest-stop
 	cd platform/$(DATABASE_PLTF) && $(DOCKER_COMPOSE) -f docker-compose.yml -f docker-compose.network.yml up -d
 
-postgres-ssh: ## enters the apirest container shell
+db-ssh: ## enters the apirest container shell
 	cd platform/$(DATABASE_PLTF) && $(MAKE) ssh
 
-postgres-start: ## starts the database container running
+db-start: ## starts the database container running
 	cd platform/$(DATABASE_PLTF) && $(MAKE) start
 
-postgres-stop: ## stops the database container but its assets will not be destroyed
+db-stop: ## stops the database container but its assets will not be destroyed
 	cd platform/$(DATABASE_PLTF) && $(MAKE) stop
 
-postgres-restart: ## restarts the running database container
+db-restart: ## restarts the running database container
 	cd platform/$(DATABASE_PLTF) && $(MAKE) restart
 
-postgres-destroy: ## destroys completly the database container with its data
+db-destroy: ## destroys completly the database container with its data
 	echo ${C_RED}"Attention!"${C_END};
 	echo ${C_YEL}"You're about to remove the database container and delete its image resource and persistance data."${C_END};
 	@echo -n ${C_RED}"Are you sure to proceed? "${C_END}"[y/n]: " && read response && if [ $${response:-'n'} != 'y' ]; then \
@@ -157,33 +157,33 @@ postgres-destroy: ## destroys completly the database container with its data
 		fi \
 	fi
 
-.PHONY: postgres-test-up postgres-test-down
+.PHONY: db-test-up db-test-down
 
-postgres-test-up: ## creates a side database for tests
+db-test-up: ## creates a side database for tests
 	$(DOCKER) exec -it $(DATABASE_CONTAINER) sh -c 'dropdb -f $(DATABASE_NAME)_testing -U "$(DATABASE_USER)"; createdb $(DATABASE_NAME)_testing -U "$(DATABASE_USER)"';
 
-postgres-test-down: ## drops the side database for tests
+db-test-down: ## drops the side database for tests
 	$(DOCKER) exec -it $(DATABASE_CONTAINER) sh -c 'dropdb -f $(DATABASE_NAME)_testing -U "$(DATABASE_USER)";';
 
-.PHONY: postgres-sql-install postgres-sql-replace postgres-sql-backup postgres-sql-remote postgres-copy-remote
+.PHONY: db-sql-install db-sql-replace db-sql-backup db-sql-remote db-copy-remote
 
-postgres-sql-install: ## installs postgres sql file into the container database to init a project from resources/database
+db-sql-install: ## installs database sql file into the container database to init a project from resources/database
 	$(MAKE) local-ownership-set;
 	$(DOCKER) exec -i $(DATABASE_CONTAINER) sh -c 'psql -d $(DATABASE_NAME) -U "$(DATABASE_USER)"' < $(ROOT_DIR)$(DATABASE_PATH)$(DATABASE_INIT)
 	echo ${C_YEL}"$(PROJECT_NAME) DATABASE"${C_END}" has been copied to container from "${C_BLU}"$(DATABASE_PATH)$(DATABASE_INIT)"${C_END}
 
-postgres-sql-replace: ## replaces the container database with the latest postgres .sql backup file from resources/database
+db-sql-replace: ## replaces the container database with the latest database .sql backup file from resources/database
 	$(MAKE) local-ownership-set;
 	$(DOCKER) exec -i $(DATABASE_CONTAINER) sh -c 'psql -d $(DATABASE_NAME) -U "$(DATABASE_USER)"' < $(ROOT_DIR)$(DATABASE_PATH)$(DATABASE_BACK)
 	echo ${C_YEL}"$(PROJECT_NAME) DATABASE"${C_END}" has been replaced from "${C_BLU}"$(DATABASE_PATH)$(DATABASE_BACK)"${C_END}
 
-postgres-sql-backup: ## copies the container database as postgres .sql backup file into resources/database
+db-sql-backup: ## copies the container database as database .sql backup file into resources/database
 	$(MAKE) local-ownership-set;
 	[ -d .$(DATABASE_PATH)$(DATABASE_BACK) ] || touch .$(DATABASE_PATH)$(DATABASE_BACK)
 	$(DOCKER) exec $(DATABASE_CONTAINER) sh -c 'pg_dump -d $(DATABASE_NAME) -U "$(DATABASE_USER)"' > $(ROOT_DIR)$(DATABASE_PATH)$(DATABASE_BACK)
 	echo ${C_YEL}"$(PROJECT_NAME) DATABASE"${C_END}" backup has been created at "${C_BLU}"$(DATABASE_PATH)$(DATABASE_BACK)"${C_END}
 
-postgres-sql-drop: ## drops and creates the postgres database into the container for reseting
+db-sql-drop: ## drops and creates the database database into the container for reseting
 	$(MAKE) local-ownership-set;
 	$(DOCKER) exec -i $(DATABASE_CONTAINER) sh -c 'dropdb -f $(DATABASE_NAME) -U "$(DATABASE_USER)"; createdb $(DATABASE_NAME) -U "$(DATABASE_USER)"'
 	echo ${C_YEL}"$(PROJECT_NAME) DATABASE"${C_END}" in container "${C_YEL}"$(DATABASE_CONTAINER)"${C_END}" has been deleted."
