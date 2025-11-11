@@ -90,7 +90,8 @@ RUN docker-php-ext-install zip gd bcmath sockets pcntl pdo pdo_pgsql
 
 # PHP PECL extensions - XDebug - (optional - uncomment line to use it and add a backslash in previous line)
 RUN apk add \
-  ${PHP_V}-pecl-amqp
+  ${PHP_V}-pecl-amqp \
+  ${PHP_V}-pecl-xdebug
 
 # Configure NGINX
 COPY config/nginx/nginx.conf /etc/nginx/nginx.conf
@@ -100,6 +101,9 @@ RUN rm -rf /var/www/html
 # Configure PHP-FPM
 COPY config/php/fpm-pool.conf /etc/${PHP_V}/php-fpm.d/www.conf
 COPY config/php/php.ini /etc/${PHP_V}/conf.d/custom.ini
+
+## Configure XDebug - (optional - uncomment line to use it)
+COPY config/php/xdebug.ini /etc/${PHP_V}/conf.d/xdebug.ini
 
 # Configure Supervisor
 COPY config/supervisor/supervisord.conf /etc/supervisor/supervisord.conf
