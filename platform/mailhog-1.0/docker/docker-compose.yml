@@ -4,7 +4,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    image: "mailhog-alpine:22"
+    image: "mailhog:alpine-3.12-mailhog-1.0"
     container_name: "${COMPOSE_PROJECT_LEAD}-${COMPOSE_PROJECT_NAME}"
     ports:
       - "${COMPOSE_PROJECT_PORT:-1025}:1025"     # SMTP port — send your app mails here
