@@ -46,11 +46,6 @@ DOCKER_CONTAINER:=$(addsuffix -$(DOCKER_CAAS), $(DOCKER_LEAD))
 DOCKER_COMPOSE_RUN=$(DOCKER_COMPOSE) run --rm
 DOCKER_EXEC_SSH=$(DOCKER) exec -it $(DOCKER_CONTAINER) sh
 
-APPLICATION_UPDATE=''
-APPLICATION_INSTALL=''
-APPLICATION_INSTALL_BASE=''
-APPLICATION_INSTALL_PACKAGES=''
-
 # -------------------------------------------------------------------------------------------------
 #  Help
 # -------------------------------------------------------------------------------------------------
