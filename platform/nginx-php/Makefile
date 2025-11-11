@@ -147,15 +147,52 @@ network:
 	cd docker && $(DOCKER_COMPOSE) -f docker-compose.yml -f docker-compose.network.yml up -d
 
 # -------------------------------------------------------------------------------------------------
-#  Container settings update on the run
+#  Supervisord services management
 # -------------------------------------------------------------------------------------------------
-.PHONY: nginx-conf php-conf php-fpm-conf
+.PHONY: supervisord-conf supervisord-conf-update
 
-nginx-conf: ## shows NGINX server block on running container
+supervisord-conf: ## lists supervisord services set on the running container
+	$(DOCKER) exec -i $(DOCKER_CONTAINER) sh -c 'ls -l /etc/supervisor/conf.d/'
+
+supervisord-update: ## updates supervisord services without the need of stoping or rebuilding the container
+	$(DOCKER) cp ./docker/config/supervisor/conf.d/. $(DOCKER_CONTAINER):/etc/supervisor/conf.d/
+	$(MAKE) restart
+
+# -------------------------------------------------------------------------------------------------
+#  Nginx settings management
+# -------------------------------------------------------------------------------------------------
+.PHONY: nginx-conf nginx-update nginx-default-conf nginx-default-update
+
+nginx-conf: ## shows nginx configuration set on the running container
 	$(DOCKER) exec -i $(DOCKER_CONTAINER) sh -c 'cat /etc/nginx/conf.d/default.conf'
 
-php-conf: ## shows PHP configuration on running container
+nginx-update: ## updates nginx configuration without the need of stoping or rebuilding the container
+	$(DOCKER) cp ./docker/config/nginx/nginx.conf $(DOCKER_CONTAINER):/etc/nginx/conf.d/default.conf
+	$(MAKE) restart
+
+nginx-default-conf: ## shows nginx default server block set on the running container
+	$(DOCKER) exec -i $(DOCKER_CONTAINER) sh -c 'cat /etc/nginx/conf.d/default.conf'
+
+nginx-default-update: ## updates nginx default server block without the need of stoping or rebuilding the container
+	$(DOCKER) cp ./docker/config/nginx/conf.d/default.conf $(DOCKER_CONTAINER):/etc/nginx/conf.d/default.conf
+	$(MAKE) restart
+
+# -------------------------------------------------------------------------------------------------
+#  PHP settings management
+# -------------------------------------------------------------------------------------------------
+
+.PHONY: php-conf php-fpm-conf
+
+php-conf: ## shows php configuration set on the running container
 	$(DOCKER) exec -i $(DOCKER_CONTAINER) sh -c 'cat /etc/php83/conf.d/custom.ini'
 
-php-fpm-conf: ## shows PHP-FPM configuration on running container
+php-conf-update: ## updates php configuration without the need of stoping or rebuilding the container
+	$(DOCKER) cp ./docker/config/php/php.ini $(DOCKER_CONTAINER):/etc/php83/conf.d/custom.ini
+	$(MAKE) restart
+
+php-fpm-conf: ## shows PHP-FPM configuration set on the running container
 	$(DOCKER) exec -i $(DOCKER_CONTAINER) sh -c 'cat /etc/php83/php-fpm.d/www.conf'
+
+php-fpm-update: ## updates PHP-FPM configuration without the need of stoping or rebuilding the container
+	$(DOCKER) cp ./docker/config/php/fpm-pool.conf $(DOCKER_CONTAINER):/etc/php83/php-fpm.d/www.conf
+	$(MAKE) restart
