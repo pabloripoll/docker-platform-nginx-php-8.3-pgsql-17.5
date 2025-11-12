@@ -351,7 +351,7 @@ This streamlines the workflow for managing containers with mnemonic recipe names
 </div>
 <br>
 
-## <a id="platform-usage"></a>Use this Platform Repository for REST API project
+## <a id="platform-usage"></a>Use this Platform Repository for your own REST API repository
 
 Clone the platforms repository
 ```bash
@@ -389,11 +389,6 @@ Repository directories structure overview:
 ├── Makefile
 └── README.md
 ```
-<br>
-
-Set up platforms
-- Copy `.env.example` to `.env` and adjust settings (rest api port, database port, mail service port, container RAM usage, etc.)
-- By configuring the PHPcontainer with e.g. `APIREST_CAAS_MEM=128M`, remember to set the same RAM value into `./platform/nginx-php/docker/config/php/php.ini`
 <br>
 
 Set up platforms
