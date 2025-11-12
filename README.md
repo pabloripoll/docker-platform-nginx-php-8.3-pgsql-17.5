@@ -401,7 +401,6 @@ Here’s a step-by-step guide for using this Platform repository along with your
 - Remove the existing `./apirest` directory contents from local and from git cache
 - Install your desired repository inside `./apirest`
 - Choose between Git submodule and detached repository approaches
-<br>
 
 ### Managing the `apirest` Directory: Submodule vs Detached Repository
 
