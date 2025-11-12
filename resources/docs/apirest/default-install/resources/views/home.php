@@ -16,7 +16,7 @@
     <p>Container is running succesfully and serving plain <code>index.php</code> script with <span>HTML5</span> on <code>./public</code> folder.</p>
     <p>Database container status: <?= $dbstatus_message; ?>.</p>
     <p>Check <span>MailHog</span> service by sending a <a href="#" id="test-email" title="Click me to send a test email">Direct Test EMAIL</a> / Status: <div id="email-status"></div></p>
-    <p>Check <span>RabbitMQ</span> service by sending a <a href="#" id="test-queue" title="Click me to push a queue message">QUEUE Test Email</a> / Status: <div id="queue-status"></div></p>
+    <!-- <p>Check <span>RabbitMQ</span> service by sending a <a href="#" id="test-queue" title="Click me to push a queue message">QUEUE Test Email</a> / Status: <div id="queue-status"></div></p> -->
     <script src="<?= assets('js/home.js') ?>"></script>
 </body>
 </html>
