@@ -5,20 +5,49 @@
 # INFRASTRUCTURE PLATFORM
 
 # NGINX 1.28, PHP 8.3, POSTGRES 17.5
-
-This Infrastructure Platform repository is designed for back-end projects and provides two separate platforms: one for the API and another for the database.
-
-The goal of this structure is to offer developers a consistent framework for local development, mirroring real-world deployment scenarios. In production, the API may be deployed on an AWS EC2 / GCP GCE or  instance or distributed across Kubernetes pods, while the database would reside on an AWS RDS instance.
-
-Additionally, this repository is independent of the API container code, allowing it to be developed in parallel with different API features. It can be configured with various platform settings tailored to the infrastructure or machine where it will be built and run — for example, adjusting container RAM usage, ports, and more.
 <br>
 
-## Content of this page:
+This Infrastructure Platform repository is designed for back-end projects and provides three separate platforms:
+
+- API Platform: Linux Alpine version 3.22 + NGINX version 1.28 *(or the latest on Alpine Package Keeper)* + PHP FPM 8.3
+- Database Platform: Linux Alpine version 3.22 + Postgres 17.5
+- Mail Service Platform: Linux Alpine version 3.12 + Mailhog 1.0
+
+The goal of this repository is to offer developers a consistent framework for local development, mirroring real-world deployment scenarios. In production, the API may be deployed on an AWS EC2 / GCP GCE or instance or distributed across Kubernetes pods, while the database would reside on an AWS RDS instance. thus, network connection between platforms are decoupled.
+
+Platform engineering is the discipline of creating and managing an internal developer platform (IDP) to provide developers with self-service tools, automated workflows, and standardized environments. By reducing cognitive load and complexity, it allows software engineering teams to innovate faster and more efficiently, building on the principles of DevOps. The IDP acts like a product, where developers are customers, and aims to streamline the entire software development lifecycle, from building and testing to deploying and monitoring.
+
+### Key principles and goals
+- Self-service: Provide developers with easy-to-use tools and automated workflows to manage their own infrastructure needs without having to file tickets or rely on other teams.
+- Standardization: Use standardized tools and environments to ensure consistency, reliability, and security across projects.
+- Reduced cognitive load: Abstract away underlying complexity so developers can focus on writing code and delivering business value rather than managing infrastructure details.
+- Developer experience: Build a positive and productive environment for developers, making them feel empowered and less frustrated.
+- Operational efficiency: Automate repetitive tasks and standardize processes to improve the speed and reliability of software delivery.
+
+### How it works
+
+- Internal Developer Platform (IDP): A dedicated platform built by the platform engineering team that provides a curated set of tools, services, and infrastructure.
+- Golden Paths: Predefined, optimized workflows and best practices that developers can follow to accomplish common tasks quickly and easily.
+- Treating the platform as a product: Platform engineers treat their IDP like a product, with developers as their customers, to ensure it meets the needs of the organization.
+<br>
+
+### Read more:
+
+- [What is platform engineering? - IBM](https://www.ibm.com/think/topics/platform-engineering)
+- [Understanding platform engineering - Red Hat](https://www.redhat.com/en/topics/platform-engineering)
+- [Platform engineering - Prescriptive Guidance - AWS](https://docs.aws.amazon.com/prescriptive-guidance/latest/aws-caf-platform-perspective/platform-eng.html)
+- [What is an internal developer platform (IDP)? - Google Cloud](https://cloud.google.com/solutions/platform-engineering)
+- [What is platform engineering? - Microsoft](https://learn.microsoft.com/en-us/platform-engineering/what-is-platform-engineering)
+- [What is Platform engineering? - Github](https://github.com/resources/articles/what-is-platform-engineering)
+<br>
+
+## Contents:
 
 - [Requirements](#requirements)
 - [Platform Features](#platform-features)
-- [API service container settings](#api-settings)
-- [Database service container settings](#db-settings)
+- [API Platform](#api-settings)
+- [Database Platform](#db-settings)
+- [Mail Service Platform](#mailer-settings)
 - [Set up Docker Containers](#setup-containers)
 - [Create Docker Containers](#create-containers)
 - [GNU Make file recipes](#make-help)
@@ -37,7 +66,7 @@ Despite Docker’s cross-platform compatibility, for intermediate to advanced so
 | ------------- | --------------------------------------------------------------------------------------------- |
 | CPU           | Linux *(x64 - x86)* /  MacOS Intel *(x64 - x86)*, or M1                                       |
 | RAM           | *(for this container)*: 1 GB minimum.                                                         |
-| DISK          | 2 GB *(though is much less, it usage could be incremented depending on the project usage)*.   |
+| DISK          | 2 GB *(though is much less, its usage could be incremented depending on the project usage)*.  |
 <br>
 
 ## <a id="platform-features"></a>Platform Features
@@ -57,23 +86,17 @@ It can be installed the most known **PHP** frameworks:
 Take into account that each framework will demand its specific configuration from inside container.
 <br><br>
 
-## <a id="api-settings"></a>API service container settings
+## <a id="api-settings"></a>API Platform
 
-Inside `./platform/nginx-php` there are a dedicated GNU Make file and the main Docker directory with the required scripts and stack assets in the `./platform/nginx-php/docker/config` directory to build the required platform configuration. Also, there is a `config.sample` with alternate configuration files suggestions.
+This platform has it own Makefile recipes to manage the container and it recipes can be manage from its directory or by a centralized Makefile at the root of the platform repository. But, **if no GNU Make installed on developer's machine** there is a `.env.example` file to be copied as `.env` with the variables required to build the container by `docker-compose.yml`.
 
-Content:
-- Linux Alpine version 3.22
-- NGINX version 1.28 *(or the latest on Alpine Package Keeper)*
-- PHP FPM 8.3
-<br>
-
-<font color="orange"><b>IMPORTANT:</b></font> There is a `.env.example` file with the variables required to build the container by `docker-compose.yml` file to create the container if no GNU Make is available on developer's machine. Otherwise, it is not required to create its `.env` manually file for building the container.
+Environment variables are highly important for maintaining the platform. Try to Keep them whatever the Docker commands case.
 
 API environment: `./platform/nginx-php/docker/.env`
 ```bash
 COMPOSE_PROJECT_LEAD="myproj"
 COMPOSE_PROJECT_CNET="mp-dev"
-COMPOSE_PROJECT_IMGK="alpine3.21-nginx1.28-php8.3"
+COMPOSE_PROJECT_IMGK="alpine3.22-nginx1.28-php8.3"
 COMPOSE_PROJECT_NAME="mp-apirest-dev"
 COMPOSE_PROJECT_HOST="127.0.0.1"
 COMPOSE_PROJECT_PORT=7501
@@ -84,12 +107,33 @@ COMPOSE_PROJECT_USER="myproj"
 COMPOSE_PROJECT_GROUP="myproj"
 ```
 
-<div style="with:100%;height:auto;text-align:center;">
-    <img src="./resources/docs/images/make-apirest-set.jpg">
-</div>
+> Note: Though this platform aim is for REST API services, it also can be used for monolith web applications
+
 <br>
 
-## <a id="db-settings"></a>Database service container settings
+<font color="orange"><b>IMPORTANT:</b></font>
+
+Although the project aims to keep platform settings consistent across machines, some runtime requirements can differ between environments *(for example: memory limits or which supervisord services should be active)*.
+
+To support environment-specific differences, there is a sample supervisor configuration directory:
+`./platform/nginx-php-8.3/docker/config/supervisor/conf.d-sample`
+
+Before building the container you must copy that directory to:
+`./platform/nginx-php-8.3/docker/config/supervisor/conf.d`
+
+Make sure the copied conf.d contains at least the service files needed to run Nginx and PHP-FPM (for example, supervisor program entries for nginx and php-fpm).
+
+```bash
+$ cd ./platform/nginx-php-8.3/docker/config/supervisor
+$ cp -vn conf.d-sample/nginx.conf conf.d-sample/php-fpm.conf conf.d/
+'conf.d-sample/nginx.conf' -> 'conf.d/nginx.conf'
+'conf.d-sample/php-fpm.conf' -> 'conf.d/php-fpm.conf'
+```
+
+This approach lets developers run additional worker processes locally without changing the shared platform settings. If you need to update Nginx, PHP, or supervisord configurations on a running container, there are Makefile recipes in `./platform/nginx-php-8.3/Makefile` that can apply changes *(reload or update services)* without destroying and rebuilding the container. Check the Makefile for available targets and usage by executing `$ make help` in its directory.
+<br><br>
+
+## <a id="db-settings"></a>Database Platform
 
 Inside `./platform/pgsql-17.5` there are a dedicated GNU Make file and the main Docker directory with the required scripts to build the required platform configuration adapted from [PostgreSQL GitHub repository source](https://github.com/docker-library/postgres/blob/master/17/alpine3.22/docker-entrypoint.sh)
 
@@ -114,10 +158,31 @@ POSTGRES_DATABASE=myproj_local
 POSTGRES_USER=myproj
 POSTGRES_PASSWORD="J4YPuJaieJ35gNAOSQQor87s82q2eUS1"
 ```
+<br>
 
-<div style="with:100%;height:auto;text-align:center;">
-    <img src="./resources/docs/images/make-postgres-set.jpg">
-</div>
+## <a id="mailer-settings"></a>Mail Service Platform
+
+Inside `./platform/mailhog-1.0` there are a dedicated GNU Make file and the main Docker directory with the required scripts to build the required platform configuration adapted from [MailHog GitHub repository source](https://github.com/mailhog/MailHog)
+
+Content:
+- Linux Alpine version 3.12
+- MailHog 1.0.1
+<br>
+
+<font color="orange"><b>IMPORTANT:</b></font> There is a `.env.example` file with the variables required to build the container by `docker-compose.yml` file to create the container if no GNU Make is available on developer's machine. Otherwise, it is not required to create its `.env` manually file for building the container.
+
+Database environment: `./platform/mailhog-1.0/docker/.env`
+```bash
+COMPOSE_PROJECT_LEAD="myproj"
+COMPOSE_PROJECT_CNET="mp-dev"
+COMPOSE_PROJECT_IMGK="alpine-3.22-mailhog"
+COMPOSE_PROJECT_HOST="127.0.0.1"
+COMPOSE_PROJECT_PORT=7504    # Port to send e-mail by PHP script
+COMPOSE_PROJECT_NAME="mp-mailhog-dev"
+COMPOSE_PROJECT_MEM="128M"
+COMPOSE_PROJECT_SWAP="512M"
+COMPOSE_PROJECT_APP_PORT="7505" # Port to see on browser the mail sent
+```
 <br>
 
 ## <a id="setup-containers"></a>Configure Docker Containers
@@ -160,6 +225,14 @@ DATABASE_PASS="J4YPuJaieJ35gNAOSQQor87s82q2eUS1"
 DATABASE_PATH="/resources/database/"
 DATABASE_INIT=pgsql-init.sql
 DATABASE_BACK=pgsql-backup.sql
+
+MAILER_PLTF=mailhog-1.0
+MAILER_IMGK=alpine-3.12-mailhog-1.0
+MAILER_PORT=7502    # Port to send e-mail by PHP script
+MAILER_CAAS=mp-mailhog-dev
+MAILER_CAAS_MEM=128M
+MAILER_CAAS_SWAP=512M
+MAILER_APP_PORT=7503    # Port to see on browser the mail sent
 ```
 
 Once the environment file is set, create each Docker environment file by the automated commands using GNU Make:
@@ -174,10 +247,18 @@ $ make apirest-set
 
 Set up the database container
 ```bash
-$ make postgres-set
+$ make db-set
 ```
 <div style="with:100%;height:auto;text-align:center;">
-    <img src="./resources/docs/images/make-postgres-set.jpg">
+    <img src="./resources/docs/images/make-db-set.jpg">
+</div>
+
+Set up the mail service container
+```bash
+$ make mailhog-set
+```
+<div style="with:100%;height:auto;text-align:center;">
+    <img src="./resources/docs/images/make-mailhog-set.jpg">
 </div>
 <br>
 
@@ -192,14 +273,6 @@ $ make local-hostname
 
 ## <a id="create-containers"></a>Create and Start Docker Containers
 
-For custom configurations, there is a `./platform/nginx-php/docker/config/supervisor/conf.d-sample` directory with **Supervisord** services. Copy the main two services required for the **apirest** container startup.
-```bash
-$ cd ./platform/nginx-php/docker/config/supervisor
-$ cp -vn conf.d-sample/nginx.conf conf.d-sample/php-fpm.conf conf.d/
-'conf.d-sample/nginx.conf' -> 'conf.d/nginx.conf'
-'conf.d-sample/php-fpm.conf' -> 'conf.d/php-fpm.conf'
-```
-
 Create and start up the API container
 ```bash
 $ make apirest-create
@@ -211,24 +284,43 @@ $ make apirest-create
 
 Testing container visiting localhost with the assigned port, but with no database connection established or failed because of wrong configuration
 <div style="with:100%;height:auto;text-align:center;">
-    <img src="./resources/docs/images/test-containers-failed.jpg">
+    <img src="./resources/docs/images/container-test-apirest-success.jpg">
 </div>
 <br>
 
 Create and start up the database container
 ```bash
-$ make postgres-create
+$ make db-create
 ```
 <div style="with:100%;height:auto;text-align:center;">
-    <img src="./resources/docs/images/make-postgres-create.jpg">
+    <img src="./resources/docs/images/make-db-create.jpg">
 </div>
 <br>
 
-Testing container visiting localhost with the assigned port, and with a database connected
+Once database service is up and running, status message will show successful connection
 <div style="with:100%;height:auto;text-align:center;">
-    <img src="./resources/docs/images/test-containers-success.jpg">
+    <img src="./resources/docs/images/container-test-db-success.jpg">
 </div>
 <br>
+
+Create and start up the mail service container
+```bash
+$ make mailhog-create
+```
+<div style="with:100%;height:auto;text-align:center;">
+    <img src="./resources/docs/images/make-mailhog-create.jpg">
+</div>
+<br>
+
+Test mail service container by clicking "Direct Test MAIL" link
+<div style="with:100%;height:auto;text-align:center;">
+    <img src="./resources/docs/images/container-test-mailhog-success.jpg">
+</div>
+<div style="with:100%;height:auto;text-align:center;">
+    <img src="./resources/docs/images/container-test-mailhog-ui-success.jpg">
+</div>
+<br>
+
 
 Docker information of both cointer up and running
 <div style="with:100%;height:auto;text-align:center;">
@@ -241,7 +333,7 @@ Docker information of both cointer up and running
 
 Despite each container can be stop or restarted, they can be stop and destroy both containers simultaneously to clean up locally from Docker generated cache, without affecting other containers running on the same machine.
 ```bash
-$ yes | make apirest-destroy postgres-destroy
+$ yes | make apirest-destroy db-destroy mailhog-destroy
 ```
 <div style="with:100%;height:auto;text-align:center;">
     <img src="./resources/docs/images/make-containers-destroy.jpg">
@@ -285,7 +377,12 @@ Repository directories structure overview:
 │   │   │   └── Dockerfile
 │   │   │
 │   │   └── Makefile
-│   └── postgres-17.5
+│   │
+│   ├── postgres-17.5
+│   │   ├── docker
+│   │   └── Makefile
+│   │
+│   └── mailhog-1.0
 │       ├── docker
 │       └── Makefile
 ├── .env
@@ -295,38 +392,86 @@ Repository directories structure overview:
 <br>
 
 Set up platforms
-- Copy `.env.example` to `.env` and adjust settings (apirest port, database port, container RAM usage, etc.)
+- Copy `.env.example` to `.env` and adjust settings (rest api port, database port, mail service port, container RAM usage, etc.)
 - By configuring the PHPcontainer with e.g. `APIREST_CAAS_MEM=128M`, remember to set the same RAM value into `./platform/nginx-php/docker/config/php/php.ini`
+<br>
+
+Set up platforms
+- Copy `.env.example` to `.env` and adjust settings (rest api port, database port, mail service port, container RAM usage, etc.)
+- By configuring the PHPcontainer with e.g. `APIREST_CAAS_MEM=128M`, remember to set the same RAM value into `./platform/nginx-php/docker/config/php/php.ini`
+<br>
+
+Here’s a step-by-step guide for using this Platform repository along with your own REST API repository:
+
+- Remove the existing `./apirest` directory contents from local and from git cache
+- Install your desired repository inside `./apirest`
+- Choose between Git submodule and detached repository approaches
+<br>
+
+### Managing the `apirest` Directory: Submodule vs Detached Repository
+
+To remove the `./apirest` directory with the default installation content and install your desired repository inside it, there are two alternatives for managing both the platform and apirest repositories independently:
+
+#### 1. **GIT Sub-module**
+
+> Git commands can be executed **only from inside the container**.
+
+- Remove `apirest` from local and git cache:
+  ```bash
+  $ rm -rfv ./apirest/* ./apirest/.[!.]*$
+  $ git rm -r --cached apirest
+  $ git commit -m "Remove apirest directory and its default installation"
+  ```
+
+- Add the desired repository as a submodule:
+  ```bash
+  $ git submodule add git@[vcs]:[account]/[repository].git ./apirest
+  $ git commit -m "Add apirest as a git submodule"
+  ```
+
+- To update submodule contents:
+  ```bash
+  $ cd ./apirest
+  $ git pull origin main  # or desired branch
+  ```
+
+- To initialize/update submodules after `git clone`:
+  ```bash
+  $ git submodule update --init --recursive
+  ```
+<br>
+
+#### 2. **GIT Detached Repository (Recommended)**
+
+> Git commands can be executed **whether from inside the container or on the local machine**.
+
+- Remove `apirest` from local and git cache:
+  ```bash
+  $ git rm -r --cached -- "apirest/*" ":(exclude)apirest/.gitkeep"
+  $ git clean -fd
+  $ git reset --hard
+  $ git commit -m "Remove apirest directory and its default installation"
+  ```
+
+- Clone the desired repository as a detached repository:
+  ```bash
+  $ git clone git@[vcs]:[account]/[repository].git ./apirest
+  ```
+
+- The `apirest` directory is now an **independent repository**, not tracked as a submodule in your main repo. You can use `git` commands freely inside `apirest` from anywhere.
 <br><br>
 
-Generate the environment for each platform
-```bash
-$ make apirest-set postgres-set
-```
-<br>
+#### **Summary Table**
 
-Create platforms containers
-```bash
-$ make apirest-create postgres-create
-```
-<br>
+| Approach         | Repo independence | Where to run git commands | Use case                        |
+|------------------|------------------|--------------------------|----------------------------------|
+| Submodule        | Tracked by main  | Inside container         | Main repo controls webapp version|
+| Detached (rec.)  | Fully independent| Local or container       | Maximum flexibility              |
 
-Remove default Nginx-PHP platform API content
-```bash
-$ git rm -r ./apirest
-$ git clean -fd
-$ git reset --hard
-$ rm -rfv ./apirest/*
-$ rm -rfv ./apirest/.*
-```
-
-Now `./apirest` directory can be used to install any other REST API repository
-
-> **Note**: Most probably it would be needed to update root `.gitignore` file to ignore the REST API one.
+> **Note**: After new project cloned inside `./apirest`, consider adding `./apirest/.gitkeep` in it to prevent accidental tracking *(especially for detached repository)*.
 
 <br>
 
----
 
 ## Contributing
 
@@ -337,8 +482,7 @@ Contributions are very welcome! Please open issues or submit PRs for improvement
 3. Commit your changes (`git commit -am 'feat: Add new feature'`)
 4. Push to the branch (`git push origin feature/YourFeature`)
 5. Create a new Pull Request
-
----
+<br><br>
 
 ## License
 
