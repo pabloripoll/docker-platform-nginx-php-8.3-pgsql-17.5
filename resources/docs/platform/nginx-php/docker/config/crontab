@@ -1,2 +1,0 @@
-* * * * * cd /var/www && php [script - command] >> /dev/stdout 2>&1
-
