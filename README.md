@@ -4,13 +4,17 @@
 
 # INFRASTRUCTURE PLATFORM
 
-# NGINX 1.28, PHP 8.3, POSTGRES 17.5
+[![Generic badge](https://img.shields.io/badge/version-1.0-blue.svg)](https://shields.io/)
+[![Open Source? Yes!](https://badgen.net/badge/Open%20Source%20%3F/Yes%21/blue?icon=github)](./)
+[![MIT license](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
+
+# NGINX 1.28, PHP 8.3, POSTGRES 16.4
 <br>
 
 This Infrastructure Platform repository is designed for back-end projects and provides three separate platforms:
 
 - API Platform: Linux Alpine version 3.22 + NGINX version 1.28 *(or the latest on Alpine Package Keeper)* + PHP FPM 8.3
-- Database Platform: Linux Alpine version 3.22 + Postgres 17.5
+- Database Platform: Linux Alpine version 3.22 + Postgres 16.4
 - Mail Service Platform: Linux Alpine version 3.12 + Mailhog 1.0
 
 The goal of this repository is to offer developers a consistent framework for local development, mirroring real-world deployment scenarios. In production, the API may be deployed on an AWS EC2 / GCP GCE or instance or distributed across Kubernetes pods, while the database would reside on an AWS RDS instance. thus, network connection between platforms are decoupled.
@@ -56,6 +60,12 @@ Platform engineering is the discipline of creating and managing an internal deve
 
 ## <a id="requirements"></a>Requirements
 
+![Linux](https://img.shields.io/badge/Linux-FCC624?style=for-the-badge&logo=linux&logoColor=black)
+![gnu](https://img.shields.io/badge/gnu-%23A42E2B.svg?style=for-the-badge&logo=gnu&logoColor=white)
+![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white)
+![Alpine Linux](https://img.shields.io/badge/Alpine_Linux-%230D597F.svg?style=for-the-badge&logo=alpine-linux&logoColor=white)
+![Nginx](https://img.shields.io/badge/nginx-%23009639.svg?style=for-the-badge&logo=nginx&logoColor=white)
+
 Despite Docker’s cross-platform compatibility, for intermediate to advanced software development on environments other than Windows NT or macOS, automating the platform build and streamlining the process of starting feature development is crucial. This automation enables a more dynamic and efficient software development lifecycle.
 
 - Docker
@@ -65,11 +75,19 @@ Despite Docker’s cross-platform compatibility, for intermediate to advanced so
 | Dev machine   | Machine's features                                                                            |
 | ------------- | --------------------------------------------------------------------------------------------- |
 | CPU           | Linux *(x64 - x86)* /  MacOS Intel *(x64 - x86)*, or M1                                       |
-| RAM           | *(for this container)*: 1 GB minimum.                                                         |
-| DISK          | 2 GB *(though is much less, its usage could be incremented depending on the project usage)*.  |
+| RAM           | *(for this container)*: 128 MB minimum.                                                         |
+| DISK          | 1 GB *(though is much less, its usage could be incremented depending on the project usage)*.  |
 <br>
 
 ## <a id="platform-features"></a>Platform Features
+
+![PHP](https://img.shields.io/badge/PHP-777BB4?style=for-the-badge&logo=php&logoColor=white)
+![Symfony](https://img.shields.io/badge/Symfony-000000?style=for-the-badge&logo=Symfony&logoColor=white)
+![Laravel](https://img.shields.io/badge/Laravel-FF2D20?style=for-the-badge&logo=laravel&logoColor=white)
+![Codeigniter](https://img.shields.io/badge/Codeigniter-EF4223?style=for-the-badge&logo=codeigniter&logoColor=white)
+![Yii](https://img.shields.io/badge/Yii%20Framework-282828?style=for-the-badge&logo=yii&logoColor=40B3D8)
+![Wordpress](https://img.shields.io/badge/Wordpress-21759B?style=for-the-badge&logo=wordpress&logoColor=white)
+![Joomla](https://img.shields.io/badge/Joomla-5091CD?style=for-the-badge&logo=joomla&logoColor=white)
 
 It can be installed the most known **PHP** frameworks:
 
@@ -135,20 +153,20 @@ This approach lets developers run additional worker processes locally without ch
 
 ## <a id="db-settings"></a>Database Platform
 
-Inside `./platform/pgsql-17.5` there are a dedicated GNU Make file and the main Docker directory with the required scripts to build the required platform configuration adapted from [PostgreSQL GitHub repository source](https://github.com/docker-library/postgres/blob/master/17/alpine3.22/docker-entrypoint.sh)
+Inside `./platform/pgsql-16.4` there are a dedicated GNU Make file and the main Docker directory with the required scripts to build the required platform configuration adapted from [PostgreSQL GitHub repository source](https://github.com/docker-library/postgres/blob/master/17/alpine3.22/docker-entrypoint.sh)
 
 Content:
 - Linux Alpine version 3.22
-- Postgres 17.5
+- Postgres 16.4
 <br>
 
 <font color="orange"><b>IMPORTANT:</b></font> There is a `.env.example` file with the variables required to build the container by `docker-compose.yml` file to create the container if no GNU Make is available on developer's machine. Otherwise, it is not required to create its `.env` manually file for building the container.
 
-Database environment: `./platform/pgsql-17.5/docker/.env`
+Database environment: `./platform/pgsql-16.4/docker/.env`
 ```bash
 COMPOSE_PROJECT_LEAD="myproj"
 COMPOSE_PROJECT_CNET="mp-dev"
-COMPOSE_PROJECT_IMGK="alpine3.22-pgsql-17.5"
+COMPOSE_PROJECT_IMGK="alpine3.22-pgsql-16.4"
 COMPOSE_PROJECT_NAME="mp-pgsql-dev"
 COMPOSE_PROJECT_HOST="127.0.0.1"
 COMPOSE_PROJECT_PORT=7500
@@ -212,8 +230,8 @@ APIREST_GIT_HOST=github.org
 APIREST_GIT_BRANCH=develop
 APIREST_DOMAIN=
 
-DATABASE_PLTF=pgsql-17.5
-DATABASE_IMGK=alpine3.22-pgsql-17.5
+DATABASE_PLTF=pgsql-16.4
+DATABASE_IMGK=alpine3.22-pgsql-16.4
 DATABASE_PORT=7500
 DATABASE_CAAS=mp-pgsql-dev
 DATABASE_CAAS_MEM=128M
@@ -355,8 +373,8 @@ This streamlines the workflow for managing containers with mnemonic recipe names
 
 Clone the platforms repository
 ```bash
-$ git clone https://github.com/pabloripoll/docker-platform-nginx-php-8.3-pgsql-17.5
-$ cd docker-platform-nginx-php-8.3-pgsql-17.5
+$ git clone https://github.com/pabloripoll/docker-platform-nginx-php-8.3-pgsql-16.4
+$ cd docker-platform-nginx-php-8.3-pgsql-16.4
 ```
 
 Repository directories structure overview:
@@ -378,7 +396,7 @@ Repository directories structure overview:
 │   │   │
 │   │   └── Makefile
 │   │
-│   ├── postgres-17.5
+│   ├── postgres-16.4
 │   │   ├── docker
 │   │   └── Makefile
 │   │
