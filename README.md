@@ -153,7 +153,7 @@ This approach lets developers run additional worker processes locally without ch
 
 ## <a id="db-settings"></a>Database Platform
 
-Inside `./platform/pgsql-16.4` there are a dedicated GNU Make file and the main Docker directory with the required scripts to build the required platform configuration adapted from [PostgreSQL GitHub repository source](https://github.com/docker-library/postgres/blob/master/17/alpine3.22/docker-entrypoint.sh)
+Inside `./platform/pgsql-16.4` there are a dedicated GNU Make file and the main Docker directory with the required scripts to build the required platform configuration adapted from [PostgreSQL GitHub repository source](https://github.com/docker-library/postgres/blob/master/16/alpine3.22/docker-entrypoint.sh)
 
 Content:
 - Linux Alpine version 3.22
